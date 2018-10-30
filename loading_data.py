@@ -23,104 +23,66 @@ np.set_printoptions(suppress=True)
 # # Loading the financial data
 
 # In[83]:
-
-
-stocks = pd.read_csv("./data/StockIndices.csv",
+def load_data(stock_path, weather_path):
+    stocks = pd.read_csv(stock_path,
                  sep=';',
                  parse_dates=['Date'],
                  index_col=['Date'],
                  decimal=',')
 
+    # data cleansing
+    stocks['Index'] = [name.replace(".", "") for name in stocks['Index'].values]
 
-# In[85]:
+    us_stocks = stocks[stocks['Index'].isin(['SPX', 'NDX', 'IXIC'])]
+    swiss_stocks = stocks[stocks['Index'] == 'SSMI']
+    jpn_stocks = stocks[stocks['Index'] == 'N225']
+    UK_stocks = stocks[stocks['Index'] == 'FTSE']
 
+    # # Loading the weather data
 
-# data cleansing
-stocks['Index'] = [name.replace(".", "") for name in stocks['Index'].values]
-
-
-# In[87]:
-
-
-us_stocks = stocks[stocks['Index'].isin(['SPX', 'NDX', 'IXIC'])]
-swiss_stocks = stocks[stocks['Index'] == 'SSMI']
-jpn_stocks = stocks[stocks['Index'] == 'N225']
-UK_stocks = stocks[stocks['Index'] == 'FTSE']
-
-
-# # Loading the weather data
-
-# In[88]:
-
-
-df = pd.read_csv("./data/Weather_ALL.csv",
+    df = pd.read_csv(weather_path,
                  sep=';',
                  parse_dates=['Date'],
                  index_col=['Date'],
                  decimal=',')
 
+    # look at how many NaNs we have
+    # df.isna().sum()
 
-# In[99]:
+    # drop NaNs
+    df.dropna(inplace=True)
 
+    us = df[df['City'].isin(['Boston', 'Chicago', 'New York', 'San Francisco'])]
+    switzerland = df[df['City'] == 'Zurich']
+    UK = df[df['City'] == 'London']
+    japan = df[df['City'] == 'Tokyo']
 
-# look at how many NaNs we have
-# df.isna().sum()
+    # # Joining the data
 
+    us_merged = pd.merge(us, us_stocks, on='Date')
+    swiss_merged = pd.merge(switzerland, swiss_stocks, on='Date')
+    jpn_merged = pd.merge(japan, jpn_stocks, on='Date')
+    UK_merged = pd.merge(UK, UK_stocks, on='Date')
 
-# In[90]:
+    # # Histograms per Month
 
+    # show all cities
+    print([city for city in df['City'].unique()])
 
-# drop NaNs
-df.dropna(inplace=True)
-
-
-# In[92]:
-
-
-us = df[df['City'].isin(['Boston', 'Chicago', 'New York', 'San Francisco'])]
-switzerland = df[df['City'] == 'Zurich']
-UK = df[df['City'] == 'London']
-japan = df[df['City'] == 'Tokyo']
-
-
-# # Joining the data
-
-# In[93]:
-
-
-us_merged = pd.merge(us, us_stocks, on='Date')
-swiss_merged = pd.merge(switzerland, swiss_stocks, on='Date')
-jpn_merged = pd.merge(japan, jpn_stocks, on='Date')
-UK_merged = pd.merge(UK, UK_stocks, on='Date')
-
-
-# # Histograms per Month
-
-# In[6]:
-
-
-# show all cities
-print([city for city in df['City'].unique()])
-
-
-# In[7]:
-
-
-# assumes (nrows x ncols) episodes
-fig, axes = plt.subplots(nrows=4, ncols=3,
+    # assumes (nrows x ncols) episodes
+    fig, axes = plt.subplots(nrows=4, ncols=3,
                          sharex=True, sharey=True,
                          figsize=(20,20)
                         )
 
-months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-for month_i, ax in enumerate(axes.flatten()):
+    for month_i, ax in enumerate(axes.flatten()):    
+        subset = df[df.index.month == month_i+1]
+        sns.distplot(subset['Mean Temperature Actual'], kde=True, ax=ax)
+        ax.set_title(months[month_i])
     
-    subset = df[df.index.month == month_i+1]
-
-    sns.distplot(subset['Mean Temperature Actual'], kde=True, ax=ax)
-    ax.set_title(months[month_i])
-    
-# Save the full figure...
-fig.savefig('./plots/monthly_temperatures.png')
+    # Save the full figure...
+    fig.savefig('./plots/monthly_temperatures.png')
+    return us_merged, swiss_merged, jpn_merged, UK_merged
 
