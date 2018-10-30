@@ -22,11 +22,17 @@ model = Sequential([
     Dense(1)
 ])
 
-training = pd.DataFrame(data = us_merged.loc(["Chicago"]).iloc([0:(len(us_merged)/2),1:7]))
-training_y = pd.DataFrame(data = us_merged.loc(["Chicago"],[""]).iloc([0:(len(us_merged)/2),1:7]))
-test = pd.DataFrame(data = {'col1': [1, 2], 'col2': [3, 4], 'col3': [5, 6], 'col4': [7, 8], 'col5': [9, 10], 'col6': [11, 12]})
-test_y = pd.DataFrame(data = {'result' : [4, 5]})
+x_train = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),
+                                             ['Mean Temperature Actual', 'Low Temperature Actual',
+                                              'High Temperature Actual', 'Precipitation Actual', 'Wind Speed Actual', 
+                                              'Relative Humidity Actual']]).iloc[0:100]
+y_train = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),"Price Close"]).iloc[0:100]
+x_test = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),
+                                             ['Mean Temperature Actual', 'Low Temperature Actual',
+                                              'High Temperature Actual', 'Precipitation Actual', 'Wind Speed Actual', 
+                                              'Relative Humidity Actual']]).iloc[100:]
+y_test = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),"Price Close"]).iloc[100:]
 
 model.compile(optimizer='rmsprop', loss='mse')
-model.fit(training, training_y, epochs=10)
-score = model.evaluate(test, test_y, batch_size=16)
+model.fit(x_train, y_train, epochs=10)
+score = model.evaluate(x_test, y_test, batch_size=16)
