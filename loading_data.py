@@ -84,5 +84,13 @@ def load_data(stock_path, weather_path):
     
     # Save the full figure...
     fig.savefig('./plots/monthly_temperatures.png')
+    print("US data summary statistics")
+    print(us_merged.describe())
+    print("CH data summary statistics")
+    print(swiss_merged.describe())
+    print("JP data summary statistics")
+    print(jpn_merged.describe())
+    print("UK data summary statistics")
+    print(UK_merged.describe())
     return us_merged, swiss_merged, jpn_merged, UK_merged
 
