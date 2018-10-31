@@ -32,42 +32,28 @@ def load_data(stock_path, weather_path):
 
     # data cleansing
     stocks['Index'] = [name.replace(".", "") for name in stocks['Index'].values]
-
-    us_stocks = stocks[stocks['Index'].isin(['SPX', 'NDX', 'IXIC'])]
-    swiss_stocks = stocks[stocks['Index'] == 'SSMI']
-    jpn_stocks = stocks[stocks['Index'] == 'N225']
-    UK_stocks = stocks[stocks['Index'] == 'FTSE']
-
+    data_per_index = {}
+ 
     # # Loading the weather data
 
-    df = pd.read_csv(weather_path,
+    weather_per_city = pd.read_csv(weather_path,
                  sep=';',
                  parse_dates=['Date'],
                  index_col=['Date'],
                  decimal=',')
-
+    cities = pd.DataFrame({'City': ["New York", "Boston", "San Francisco", "Chicago", "London", "Zurich", "Tokyo"],
+                              'Country': ["USA", "USA", "USA", "USA", "UK", "Switzerland", "Japan"]})
+    weather_per_city = pd.merge(weather_per_city, cities, on="City")
     # look at how many NaNs we have
     # df.isna().sum()
-
     # drop NaNs
-    df.dropna(inplace=True)
-
-    us = df[df['City'].isin(['Boston', 'Chicago', 'New York', 'San Francisco'])]
-    switzerland = df[df['City'] == 'Zurich']
-    UK = df[df['City'] == 'London']
-    japan = df[df['City'] == 'Tokyo']
-
-    # # Joining the data
-
-    us_merged = pd.merge(us, us_stocks, on='Date')
-    ch_merged = pd.merge(switzerland, swiss_stocks, on='Date')
-    jp_merged = pd.merge(japan, jpn_stocks, on='Date')
-    uk_merged = pd.merge(UK, UK_stocks, on='Date')
-
-    # # Histograms per Month
+    weather_per_city.dropna(inplace=True)
+    
+    for stock_index in stocks.Index.unique():
+        data_per_index[stock_index] = pd.merge(stocks[stocks["Index"] == stock_index], weather_per_city, left_index = True, right_index = True)
 
     # show all cities
-    print([city for city in df['City'].unique()])
+    print([city for city in weather_per_city['City'].unique()])
     # assumes (nrows x ncols) episodes
-    return us_merged, ch_merged, jp_merged, uk_merged
+    return data_per_index, weather_per_city
 
