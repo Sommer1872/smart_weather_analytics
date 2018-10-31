@@ -27,7 +27,6 @@ def load_data(stock_path, weather_path):
     stocks = pd.read_csv(stock_path,
                  sep=';',
                  parse_dates=['Date'],
-                 index_col=['Date'],
                  decimal=',')
 
     # data cleansing
@@ -39,7 +38,6 @@ def load_data(stock_path, weather_path):
     weather_per_city = pd.read_csv(weather_path,
                  sep=';',
                  parse_dates=['Date'],
-                 index_col=['Date'],
                  decimal=',')
     cities = pd.DataFrame({'City': ["New York", "Boston", "San Francisco", "Chicago", "London", "Zurich", "Tokyo"],
                               'Country': ["USA", "USA", "USA", "USA", "UK", "Switzerland", "Japan"]})
@@ -50,8 +48,7 @@ def load_data(stock_path, weather_path):
     weather_per_city.dropna(inplace=True)
     
     for stock_index in stocks.Index.unique():
-        data_per_index[stock_index] = pd.merge(stocks[stocks["Index"] == stock_index], weather_per_city, left_index = True, right_index = True)
-
+        data_per_index[stock_index] = pd.merge(stocks[stocks["Index"] == stock_index], weather_per_city, on="Date")
     # show all cities
     print([city for city in weather_per_city['City'].unique()])
     # assumes (nrows x ncols) episodes
