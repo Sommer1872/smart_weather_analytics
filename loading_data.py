@@ -60,37 +60,14 @@ def load_data(stock_path, weather_path):
     # # Joining the data
 
     us_merged = pd.merge(us, us_stocks, on='Date')
-    swiss_merged = pd.merge(switzerland, swiss_stocks, on='Date')
-    jpn_merged = pd.merge(japan, jpn_stocks, on='Date')
-    UK_merged = pd.merge(UK, UK_stocks, on='Date')
+    ch_merged = pd.merge(switzerland, swiss_stocks, on='Date')
+    jp_merged = pd.merge(japan, jpn_stocks, on='Date')
+    uk_merged = pd.merge(UK, UK_stocks, on='Date')
 
     # # Histograms per Month
 
     # show all cities
     print([city for city in df['City'].unique()])
-
     # assumes (nrows x ncols) episodes
-    fig, axes = plt.subplots(nrows=4, ncols=3,
-                         sharex=True, sharey=True,
-                         figsize=(20,20)
-                        )
-
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-    for month_i, ax in enumerate(axes.flatten()):    
-        subset = df[df.index.month == month_i+1]
-        sns.distplot(subset['Mean Temperature Actual'], kde=True, ax=ax)
-        ax.set_title(months[month_i])
-    
-    # Save the full figure...
-    fig.savefig('./plots/monthly_temperatures.png')
-    print("US data summary statistics")
-    print(us_merged.describe())
-    print("CH data summary statistics")
-    print(swiss_merged.describe())
-    print("JP data summary statistics")
-    print(jpn_merged.describe())
-    print("UK data summary statistics")
-    print(UK_merged.describe())
-    return us_merged, swiss_merged, jpn_merged, UK_merged
+    return us_merged, ch_merged, jp_merged, uk_merged
 
