@@ -13,25 +13,27 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation
 import loading_data as ld
 from sklearn.model_selection import KFold, cross_val_score
-k_fold = KFold(n_splits=3)
+from keras.callbacks import History 
 
 
-model = Sequential([
-    Dense(32, input_shape=(6,)),
-    Dense(1)
-])
 
-x = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),
-                                             ['Mean Temperature Actual', 'Low Temperature Actual',
-                                              'High Temperature Actual', 'Precipitation Actual', 'Wind Speed Actual', 
-                                              'Relative Humidity Actual']])
-y = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),"Price Close"])
-x_test = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),
-                                             ['Mean Temperature Actual', 'Low Temperature Actual',
-                                              'High Temperature Actual', 'Precipitation Actual', 'Wind Speed Actual', 
-                                              'Relative Humidity Actual']]).iloc[1000:]
-y_test = pd.DataFrame(data = us_merged.loc[(us_merged["City"] == "Chicago") & (us_merged["Index"] == "SPX"),"Price Close"]).iloc[1000:]
 
-model.compile(optimizer='rmsprop', loss='mse')
-model.summary()
-model.fit(x, y, validation_split=0.33, epochs=150, batch_size=10)
+
+def FullyConected(x, y):
+    #Hyperparameters
+    history = History()
+    models = {}
+    for i in range(1,10):
+        number_of_nodes = i*5
+        print("Number of Nodes" + str(number_of_nodes))
+        model = Sequential([
+            Dense(number_of_nodes, input_shape=(42,)),
+            Dense(1)
+            ])
+        model.compile(optimizer='rmsprop', loss='mse')
+        model.summary()
+        model.fit(x, y, validation_split=0.33, epochs=10, batch_size=128)
+    print(history)
+    
+#def RNN:
+    #model = 

@@ -14,7 +14,7 @@ def temp_descriptive(data):
     per_month = []
     for city in data.City.unique():
         for i in range(1,13):
-            subset = data.loc[(data['City'] == city) & (data.index.month == i)]['Mean Temperature Actual']
+            subset = data.loc[(data['City'] == city) & (data.Date.dt.month == i)]['Mean Temperature Actual']
             per_month.append(subset)
         fontsize = 20
         fig, ax = plt.subplots(figsize=(25,10))
@@ -31,7 +31,7 @@ def temp_descriptive(data):
                         )
 
         for month_i, ax in enumerate(axes.flatten()):
-            subset = data[data.index.month == month_i+1]
+            subset = data[data.Date.dt.month == month_i+1]
             sns.distplot(subset['Mean Temperature Actual'], kde=True, ax=ax)
             ax.set_title(months[month_i])
             # Save the full figure...
