@@ -56,3 +56,8 @@ def load_data(stock_path, weather_path):
     # assumes (nrows x ncols) episodes
     return data_per_index, weather_per_city
 
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

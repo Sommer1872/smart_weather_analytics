@@ -51,3 +51,9 @@ def return_histogram(data, index):
     sns.distplot(data)
     fig.savefig('./plots/' + index + '_hist.png')
 
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

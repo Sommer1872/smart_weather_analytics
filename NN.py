@@ -60,3 +60,10 @@ def build_LSTM(x, y):
         model.add(Dense(1))
         model.compile('sgd', loss = 'mse')
         model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
+
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
