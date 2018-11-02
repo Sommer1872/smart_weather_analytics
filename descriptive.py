@@ -40,7 +40,7 @@ def temp_descriptive(data):
             # Save the full figure...
             fig.savefig('./plots/' + city + '_monthly_temperatures.png')
         
-    data["Price Close"].plot()
+    #data["Price Close"].plot()
     return summary
 
 def return_histogram(data, index):

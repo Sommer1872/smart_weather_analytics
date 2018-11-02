@@ -62,7 +62,6 @@ price_losses_l2_relu = {}
 price_losses_lstm = {}
 for price_data in price_data_list:
     #Neural Net Data
-    '''
     print('------\n------\n------\n' + price_data + '\n------')
     data = price_data_list[price_data].pivot_table(index = ["Date", "Price Close"], columns='City',
                           values = ['Mean Temperature Actual',	'Low Temperature Actual',
@@ -76,7 +75,7 @@ for price_data in price_data_list:
     price_losses_l2_relu[price_data] = NN.Fully_Connected_TwoL_relu(X, Y)   
     print('------\n------\n------\n Two hidden layers\n------')
     price_losses_l2[price_data] = NN.Fully_Connected_TwoL(X, Y)  
-    '''
+
     ## LSTM
     print('------\n------\n------\n One hidden layer\n------')
     lstm_X = X[2:-2]
