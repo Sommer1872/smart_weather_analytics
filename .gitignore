@@ -1,3 +1,4 @@
 data*
+plots*
 __pycache__/*
 .ipynb_checkpoints/*
