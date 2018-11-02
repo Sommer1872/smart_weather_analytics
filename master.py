@@ -7,21 +7,23 @@ Created on Wed Oct 31 11:26:09 2018
 import pickle
 import pandas as pd
 import numpy as np
-import loading_data as ld
-import NN
-import descriptive as de
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
 from sklearn import preprocessing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
-from matplotlib import pyplot
+
+# local imports
+import NN
+import descriptive as de
+import loading_data as ld
 
 np.set_printoptions(suppress=True)
 
-weather_path = "C:/Users/Jan-Gunther Gosselke/Google Drive/SDA/Data/Weather_ALL.csv"
-stock_path = "C:/Users/Jan-Gunther Gosselke/Google Drive/SDA/Data/StockIndices.csv"
+weather_path = "./data/Weather_ALL.csv"
+stock_path = "./data/StockIndices.csv"
 
 price_data_list, weather_per_city = ld.load_data(stock_path, weather_path)
 
@@ -35,15 +37,15 @@ for index in price_data_list:
         ordered_returns["Return"] = np.log(ordered_returns['Return']) - np.log(ordered_returns['Return'].shift(periods=1))
         return_data_list[index] = pd.concat([return_data_list[index], ordered_returns]).dropna(axis=0, how = "any")
 
-filename = "./price-data.pickle"
-with open(filename, 'wb') as handle:
-    pickle.dump(price_data_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
-filename = "./retur-data.pickle"
-with open(filename, 'wb') as handle:
-    pickle.dump(return_data_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# save to pickle if needed
+#filename = "./price-data.pickle"
+#with open(filename, 'wb') as handle:
+#    pickle.dump(price_data_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#filename = "./retur-data.pickle"
+#with open(filename, 'wb') as handle:
+#    pickle.dump(return_data_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-##Descriptive Statistics
-for data in price_data_list:
+##Descriptive Statistics for data in price_data_list:
     de.temp_descriptive(weather_per_city)
     
 for index in return_data_list:
@@ -204,9 +206,9 @@ for return_data in return_data_list:
         residuals = pd.DataFrame(model_fit.resid)
         residuals.plot()
         plot_acf(residuals,lags=10)
-        pyplot.show()
+        plt.show()
         residuals.plot(kind='kde')
-        pyplot.show()
+        plt.show()
         print(residuals.describe())
         
         #ARMA11 with exogenous variables
@@ -218,9 +220,9 @@ for return_data in return_data_list:
         # plot residual errors
         residuals2 = pd.DataFrame(model_fit2.resid)
         residuals2.plot()
-        pyplot.show()
+        plt.show()
         residuals2.plot(kind='kde')
-        pyplot.show()
+        plt.show()
         print(residuals2.describe())
         
     data['global_cold'] = data["VeryCold"].all(axis = 1)*1

@@ -73,3 +73,10 @@ def build_LSTM(x, y, timesteps):
     model.compile('sgd', loss = 'mse')
     loss = model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
     return loss
+
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
