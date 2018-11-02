@@ -13,8 +13,8 @@ fontsize = 20
 def temp_descriptive(data):
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     summary = data.describe()
-    per_month = []
     for city in data.City.unique():
+        per_month = []
         for i in range(1,13):
             subset = data.loc[(data['City'] == city) & (data.Date.dt.month == i)]['Mean Temperature Actual']
             per_month.append(subset)
@@ -24,7 +24,7 @@ def temp_descriptive(data):
         ax.set_xlabel("Month", fontsize=fontsize)
         ax.set_title("Daily Mean Temperature by Month - " + city, fontsize=fontsize)
         ax.set_xticklabels(months)
-        ax.set_ylabel("Degree Celcius",fontsize=fontsize);
+        ax.set_ylabel("Degree Celcius",fontsize=fontsize)
         fig.savefig('./plots/' + city + '_boxplots')
         
         
@@ -34,11 +34,13 @@ def temp_descriptive(data):
                         )
 
         for month_i, ax in enumerate(axes.flatten()):
-            subset = data[data.Date.dt.month == month_i+1]
+            subset = data[(data['City'] == city) & (data.Date.dt.month == i)]
             sns.distplot(subset['Mean Temperature Actual'], kde=True, ax=ax)
             ax.set_title(months[month_i])
             # Save the full figure...
             fig.savefig('./plots/' + city + '_monthly_temperatures.png')
+        
+    data["Price Close"].plot()
     return summary
 
 def return_histogram(data, index):

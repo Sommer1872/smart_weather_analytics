@@ -7,25 +7,17 @@ Created on Wed Oct 31 11:26:09 2018
 import pickle
 import pandas as pd
 import numpy as np
-import math
 import loading_data as ld
 import NN
 import descriptive as de
 from sklearn import preprocessing
-from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.graphics.tsaplots import plot_acf
-from statsmodels.graphics import tsaplots
 from statsmodels.graphics.tsaplots import plot_pacf
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from matplotlib import pyplot
-from pandas.plotting import autocorrelation_plot
-from pandas.core import datetools
-import scipy.stats
-from arch import arch_model
-#from arch import GARCH, Normal
-from arch.univariate import arch_model
+
 np.set_printoptions(suppress=True)
 
 weather_path = "C:/Users/Jan-Gunther Gosselke/Google Drive/SDA/Data/Weather_ALL.csv"
@@ -72,14 +64,14 @@ for price_data in price_data_list:
                                     'Relative Humidity Actual']).reset_index(level=['Price Close']).dropna(axis=0, how = "any")
     Y = data['Price Close'].to_frame().values
     X = min_max_scaler.fit_transform(data.drop("Price Close", axis = 1).values)
-    print('------\n------\n------\n One hidden layers\n------')
+    print('------\n------\n------\n One hidden layer\n------')
     NN.Fully_Connected_OneL(X, Y)
     print('------\n------\n------\n Two hidden layers\n------')
-    NN.Fully_Connected_TwoL(X, Y)   
+    NN.Fully_Connected_TwoL_relu(X, Y)   
     
     ## LSTM
-    print('------\n------\n------\n One hidden layers\n------')
-    NN.RNN(X, Y)
+    print('------\n------\n------\n One hidden layer\n------')
+    NN.build_LSTM(X, Y)
     
 for return_data in return_data_list:
     #Neural Net Data
@@ -92,11 +84,16 @@ for return_data in return_data_list:
     """
     Y = data['Return'].to_frame().values
     X = min_max_scaler.fit_transform(data.drop("Return", axis = 1).values)
-    print('------\n------\n------\n One hidden layers\n------')
+    print('------\n------\n------\n One hidden layer\n------')
     NN.Fully_Connected_OneL(X, Y)
     print('------\n------\n------\n Two hidden layers\n------')
-    NN.Fully_Connected_TwoL(X, Y)
+    NN.Fully_Connected_TwoL_relu(X, Y)
     """
+        
+    ## LSTM
+    print('------\n------\n------\n One hidden layer\n------')
+    NN.build_LSTM(X, Y)
+    
     ##OLS
     
     for City in data['Mean Temperature Actual']:
