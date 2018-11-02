@@ -26,7 +26,7 @@ def Fully_Connected_OneL(x, y):
 
 def Fully_Connected_TwoL(x, y):
     #Hyperparameters
-    loss = {}
+    history = {}
     for i in range(1,2):
         number_of_nodes_l1 = i*5
         for j in range (1,10):
@@ -41,13 +41,13 @@ def Fully_Connected_TwoL(x, y):
             model.summary()
             history_callback = model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
             dict_name = "i = " + str(number_of_nodes_l1) + " j = " + str(number_of_nodes_l2)
-            loss[dict_name] = history_callback.history["loss"]
-    return loss
+            history[dict_name] = history_callback
+    return history
             
             
 def Fully_Connected_TwoL_relu(x, y):
     #Hyperparameters
-    loss = {}
+    history = {}
     for i in range(1,10):
         number_of_nodes_l1 = i*5
         for j in range (1,10):
@@ -62,8 +62,8 @@ def Fully_Connected_TwoL_relu(x, y):
             model.summary()
             history_callback = model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
             dict_name = "i = " + str(number_of_nodes_l1) + " j = " + str(number_of_nodes_l2)
-            loss[dict_name] = history_callback.history["loss"]
-    return loss
+            history[dict_name] = history_callback
+    return history
     
 def build_LSTM(x, y, timesteps):
     model = Sequential()
@@ -71,12 +71,5 @@ def build_LSTM(x, y, timesteps):
     model.add(LSTM(42, return_sequences=True))
     model.add(Dense(1))
     model.compile('sgd', loss = 'mse')
-    loss = model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
-    return loss
-
-
-def main():
-    pass
-
-if __name__ == "__main__":
-    main()
+    history = model.fit(x, y, validation_split = 0.33, epochs = 10, batch_size = 128)
+    return history
