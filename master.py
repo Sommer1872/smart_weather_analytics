@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 31 11:26:09 2018
-
-@author: Jan-Gunther Gosselke
 """
 import pickle
 import pandas as pd
