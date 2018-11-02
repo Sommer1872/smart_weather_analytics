@@ -7,8 +7,7 @@ Created on Wed Oct 31 11:26:09 2018
 import pickle
 import pandas as pd
 import numpy as np
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
+import statsmodels.api as sm import matplotlib.pyplot as plt
 
 from sklearn import preprocessing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -61,41 +60,42 @@ price_losses_l2 = {}
 price_losses_l2_relu = {}
 price_losses_lstm = {}
 
-#for price_data in price_data_list:
-#    #Neural Net Data
-#    print('------\n------\n------\n' + price_data + '\n------')
-#    data = price_data_list[price_data].pivot_table(index = ["Date", "Price Close"], columns='City',
-#                          values = ['Mean Temperature Actual',	'Low Temperature Actual',
-#                                    'High Temperature Actual',	'Precipitation Actual',	'Wind Speed Actual',
-#                                    'Relative Humidity Actual']).reset_index(level=['Price Close']).dropna(axis=0, how = "any")
-#    Y = data['Price Close'].to_frame().values
-#    X = min_max_scaler.fit_transform(data.drop("Price Close", axis = 1).values)
-#    print('------\n------\n------\n One hidden layer\n------')
-#    price_losses_l1[price_data] = NN.Fully_Connected_OneL(X, Y)
-#    print('------\n------\n------\n Two hidden layers\n------')
-#    price_losses_l2_relu[price_data] = NN.Fully_Connected_TwoL_relu(X, Y)   
-#    print('------\n------\n------\n Two hidden layers\n------')
-#    price_losses_l2[price_data] = NN.Fully_Connected_TwoL(X, Y)  
-#
-#    ## LSTM
-#    print('------\n------\n------\n One hidden layer\n------')
-#    lstm_X = X[2:-2]
-#    lstm_Y = Y[2:-2]
-#    samples = list()
-#    samples_results = list()
-#    length = 130
-#    # step over the 5,000 in jumps of 200
-#    for i in range(0,len(lstm_X),length):
-#    	# grab from i to i + 200
-#        sample = lstm_X[i:i+length]
-#        sample_result = lstm_Y[i:i+length]
-#        samples.append(sample)
-#        samples_results.append(sample_result)
-#    X_array = np.array(samples)
-#    X_array = X_array.reshape((len(samples), length, 42))
-#    Y_array = np.array(samples_results)
-#    Y_array = Y_array.reshape((len(samples_results), length, 1))
-#    price_losses_lstm[price_data] = NN.build_LSTM(X_array, Y_array, length)
+for price_data in price_data_list:
+    #Neural Net Data
+    print('------\n------\n------\n' + price_data + '\n------')
+    data = price_data_list[price_data].pivot_table(index = ["Date", "Price Close"], columns='City',
+                          values = ['Mean Temperature Actual',	'Low Temperature Actual',
+                                    'High Temperature Actual',	'Precipitation Actual',	'Wind Speed Actual',
+                                    'Relative Humidity Actual']).reset_index(level=['Price Close']).dropna(axis=0, how = "any")
+    Y = data['Price Close'].to_frame().values
+    X = min_max_scaler.fit_transform(data.drop("Price Close", axis = 1).values)
+    print('------\n------\n------\n One hidden layer\n------')
+    price_losses_l1[price_data] = NN.Fully_Connected_OneL(X, Y)
+    print('------\n------\n------\n Two hidden layers\n------')
+    price_losses_l2_relu[price_data] = NN.Fully_Connected_TwoL_relu(X, Y)   
+    print('------\n------\n------\n Two hidden layers\n------')
+    price_losses_l2[price_data] = NN.Fully_Connected_TwoL(X, Y)  
+
+    ## LSTM
+    print('------\n------\n------\n One hidden layer\n------')
+    lstm_X = X[2:-2]
+    lstm_Y = Y[2:-2]
+    samples = list()
+    samples_results = list()
+    length = 130
+    # step over the 5,000 in jumps of 200
+    for i in range(0,len(lstm_X),length):
+    	# grab from i to i + 200
+        sample = lstm_X[i:i+length]
+        sample_result = lstm_Y[i:i+length]
+        samples.append(sample)
+        samples_results.append(sample_result)
+    X_array = np.array(samples)
+    X_array = X_array.reshape((len(samples), length, 42))
+    Y_array = np.array(samples_results)
+    Y_array = Y_array.reshape((len(samples_results), length, 1))
+    price_losses_lstm[price_data] = NN.build_LSTM(X_array, Y_array, length)
+
 
 return_losses_l1 = {}
 return_losses_l2 = {}
@@ -104,42 +104,43 @@ return_losses_lstm = {}
 for return_data in return_data_list:
     #Neural Net Data
     
-#    print('------\n------\n------\n' + return_data + '\n------')
-#    data = return_data_list[return_data].pivot_table(index = ["Date", "Return"], columns='City',
-#                          values = ['Mean Temperature Actual',	'Low Temperature Actual',
-#                                    'High Temperature Actual',	'Precipitation Actual',	'Wind Speed Actual',
-#                                    'Relative Humidity Actual']).reset_index(level=['Return']).dropna(axis=0, how = "any")
-#    
-#    Y = data['Return'].to_frame().values
-#    X = min_max_scaler.fit_transform(data.drop("Return", axis = 1).values)
-#    print('------\n------\n------\n One hidden layer\n------')
-#    return_losses_l1[return_data] = NN.Fully_Connected_OneL(X, Y)
-#    print('------\n------\n------\n Two hidden layers\n------')
-#    return_losses_l2_relu[return_data] = NN.Fully_Connected_TwoL_relu(X, Y)   
-#    print('------\n------\n------\n Two hidden layers\n------')
-#    return_losses_l2[return_data] = NN.Fully_Connected_TwoL(X, Y) 
-#    
-#        
-#    ## LSTM
-#    print('------\n------\n------\n One hidden layer\n------')
-#    lstm_X = X[:-2]
-#    lstm_Y = Y[:-2]
-#    samples = list()
-#    samples_results = list()
-#    length = 130
-#    # step over the 5,000 in jumps of 200
-#    for i in range(0,len(lstm_X),length):
-#    	# grab from i to i + 200
-#        sample = lstm_X[i:i+length]
-#        sample_result = lstm_Y[i:i+length]
-#        samples.append(sample)
-#        samples_results.append(sample_result)
-#    X_array = np.array(samples)
-#    X_array = X_array.reshape((len(samples), length, 42))
-#    Y_array = np.array(samples_results)
-#    Y_array = Y_array.reshape((len(samples_results), length, 1))
-#    return_losses_lstm[return_data] = NN.build_LSTM(X_array, Y_array, length)
+    print('------\n------\n------\n' + return_data + '\n------')
+    data = return_data_list[return_data].pivot_table(index = ["Date", "Return"], columns='City',
+                          values = ['Mean Temperature Actual',	'Low Temperature Actual',
+                                    'High Temperature Actual',	'Precipitation Actual',	'Wind Speed Actual',
+                                    'Relative Humidity Actual']).reset_index(level=['Return']).dropna(axis=0, how = "any")
     
+    Y = data['Return'].to_frame().values
+    X = min_max_scaler.fit_transform(data.drop("Return", axis = 1).values)
+    print('------\n------\n------\n One hidden layer\n------')
+    return_losses_l1[return_data] = NN.Fully_Connected_OneL(X, Y)
+    print('------\n------\n------\n Two hidden layers\n------')
+    return_losses_l2_relu[return_data] = NN.Fully_Connected_TwoL_relu(X, Y)   
+    print('------\n------\n------\n Two hidden layers\n------')
+    return_losses_l2[return_data] = NN.Fully_Connected_TwoL(X, Y) 
+    
+        
+    ## LSTM
+    print('------\n------\n------\n One hidden layer\n------')
+    lstm_X = X[:-2]
+    lstm_Y = Y[:-2]
+    samples = list()
+    samples_results = list()
+    length = 130
+    # step over the 5,000 in jumps of 200
+    for i in range(0,len(lstm_X),length):
+    	# grab from i to i + 200
+        sample = lstm_X[i:i+length]
+        sample_result = lstm_Y[i:i+length]
+        samples.append(sample)
+        samples_results.append(sample_result)
+    X_array = np.array(samples)
+    X_array = X_array.reshape((len(samples), length, 42))
+    Y_array = np.array(samples_results)
+    Y_array = Y_array.reshape((len(samples_results), length, 1))
+    return_losses_lstm[return_data] = NN.build_LSTM(X_array, Y_array, length)
+    
+
     ##OLS
     
     for City in data['Mean Temperature Actual']:
