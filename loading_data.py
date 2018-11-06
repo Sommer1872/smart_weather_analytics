@@ -18,9 +18,8 @@ warnings.filterwarnings('ignore')
 
 # suppress the scientific notation when printing numpy arrays
 np.set_printoptions(suppress=True)
-
 dateparse = lambda x: pd.datetime.strptime(x, '%d/%m/%Y')
-# # Loading the financial data
+
 
 # In[83]:
 def load_data(stock_path, weather_path):
@@ -55,6 +54,45 @@ def load_data(stock_path, weather_path):
     print([city for city in weather_per_city['City'].unique()])
     # assumes (nrows x ncols) episodes
     return data_per_index, weather_per_city
+
+
+def load_data_OLS(stock_path, weather_path, stock_index):
+    # # Loading the data
+    
+    # Stocks
+    stocks = pd.read_csv(
+        stock_path,
+        sep=';',
+        decimal=',')
+    
+    # stocks date format: 29/10/2018
+    stocks['Date'] = pd.to_datetime(stocks['Date'], format='%d/%m/%Y')
+    stocks.set_index('Date', inplace=True)
+     
+    # converting prices to floats
+    stocks['Price Close'] = [float(price) for price in stocks['Price Close']]
+    
+    # data cleansing
+    stocks['Index'] = [name.replace(".", "") for name in stocks['Index'].values]
+    
+    # selecting a specific index
+    stock_index = stocks[stocks['Index'] == stock_index]
+    
+    # Weather
+    weather = pd.read_csv(weather_path,
+                     sep=';',
+                     decimal=',')
+    
+    # weather date format: 29/10/2018
+    weather['Date'] = pd.to_datetime(weather['Date'], format='%d/%m/%Y')
+    weather.set_index('Date', inplace=True)
+    weather.head()
+    
+    # drop NaNs
+    weather.dropna(inplace=True)
+    
+    return stock_index, weather
+
 
 def main():
     pass
