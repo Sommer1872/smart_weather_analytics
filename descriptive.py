@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 31 11:17:24 2018
-
-@author: Jan-Gunther Gosselke
 """
 
 import seaborn as sns

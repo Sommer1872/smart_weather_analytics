@@ -11,7 +11,6 @@ def dateparse(x):
     return pd.datetime.strptime(x, '%d/%m/%Y')
 
 
-# In[83]:
 def load_data(stock_path, weather_path):
     stocks = pd.read_csv(
         stock_path,
@@ -34,6 +33,7 @@ def load_data(stock_path, weather_path):
         parse_dates=['Date'],
         date_parser=dateparse,
         decimal=',')
+
     cities = pd.DataFrame({
         'City': [
             "New York", "Boston", "San Francisco", "Chicago", "London",
@@ -41,6 +41,7 @@ def load_data(stock_path, weather_path):
         ],
         'Country': ["USA", "USA", "USA", "USA", "UK", "Switzerland", "Japan"]
     })
+
     weather_per_city = pd.merge(weather_per_city, cities, on="City")
     # look at how many NaNs we have
     # df.isna().sum()
@@ -52,6 +53,7 @@ def load_data(stock_path, weather_path):
             stocks[stocks["Index"] == stock_index],
             weather_per_city,
             on="Date")
+
     # show all cities
     print([city for city in weather_per_city['City'].unique()])
     # assumes (nrows x ncols) episodes
