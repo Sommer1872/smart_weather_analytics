@@ -9,8 +9,8 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
 
-# local imports
-import loading_data as ld
+# local imports from utils folder
+import utils.loading_data as ld
 
 # making a directory to save plots if not existing:
 try:

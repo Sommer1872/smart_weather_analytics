@@ -9,10 +9,10 @@ import numpy as np
 
 from sklearn import preprocessing
 
-# local imports
-import NN
-import descriptive as de
-import loading_data as ld
+# local imports from utils folder
+import utils.NN as NN
+import utils.descriptive as de
+import utils.loading_data as ld
 
 # making a directory to save plots:
 try:
