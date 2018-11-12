@@ -46,15 +46,15 @@ def main():
     return_data_list = calculate_returns(price_data_list)
 
     # Descriptive Statistics for weather data
-    print("\nCreating plots...\n")
-    de.temp_descriptive(weather_per_city)
+    print("\nCreating plots...\n")  # only makes sense with more data
+    # de.temp_descriptive(weather_per_city)
 
     # Creating and saving Histograms of returns of all indices
-    for index in return_data_list:
-        de.return_histogram(return_data_list[index]['Return'], index)
+    # for index in return_data_list:
+    #    de.plot_histogram(return_data_list[index]['Return'], index)
 
     train_NN_on_returns(stock_path, weather_path)
-
+    # train_NN_on_prices(stock_path, weather_path)
 
 def save_to_pickle(data, filename):
     with open("./" + filename, 'wb') as handle:

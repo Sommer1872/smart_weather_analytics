@@ -20,6 +20,7 @@ except FileExistsError:
 
 np.set_printoptions(suppress=True)
 
+
 # loading the data
 weather_path = "./sample_data/sample_Weather_ALL.csv"
 stock_path = "./sample_data/sample_StockIndices.csv"
@@ -37,16 +38,12 @@ city = "New York"
 def main():
     OLS_and_ARMA(index, city)
     OLS_global(index)
-
+    
     if "sample" in stock_path:
-        print("\nxxxxxxxxxxxxxxxxx ATTENTION xxxxxxxxxxxxxxxxxxxx \n")
-        print("This is only a small sample of the dataset (October 2018)")
-        print(
-            "The data is proprietary and could therefore not be provided in full"
-        )
-        print(
-            "For meaningful results, please add more data in the same format")
-        print("\n\n")
+        print("\nxxxxxxxxxxxxxxxxx ATTENTION xxxxxxxxxxxxxxxxxxxx \n" +
+            "This is only a small sample of the dataset (October 2018)" +
+             "The data is proprietary and could therefore not be provided in full \n" +
+            "For meaningful results, please add more data in the same format \n\n")
 
 
 def OLS_and_ARMA(index, city):
@@ -59,27 +56,25 @@ def OLS_and_ARMA(index, city):
     data = pd.merge(stock_index, weather, on='Date')
     data = data[data['City'] == city]
 
-    # GENERATE WEATHER BINARY
+    # Generate weather binaries
     data['VeryCold'] = np.where(
-        data['Mean Temperature Actual'] <= np.percentile(
-            data['Mean Temperature Actual'], q=25), 1, 0)
+        data['Mean Temperature Actual'] <= np.percentile(data['Mean Temperature Actual'], q=25), 1, 0)
+
     data['HeavyRain'] = np.where(
-        data['Precipitation Actual'] >= np.percentile(
-            data['Precipitation Actual'], q=75), 1, 0)
+        data['Precipitation Actual'] >= np.percentile(data['Precipitation Actual'], q=75), 1, 0)
+
     data['ColdRain'] = data['HeavyRain'] * data['VeryCold']
 
-    # GENERAGE SEASON BINARY
+    # Generate season binaries
     data['weekday'] = data.index.dayofweek
     data['month'] = data.index.month
 
     data['Monday'] = np.where(data['weekday'] == 0, 1, 0)
     data['Winter'] = np.where(
-        (data['month'] == 11) | (data['month'] == 12) | (data['month'] == 1),
-        1, 0)
+        (data['month'] == 11) | (data['month'] == 12) | (data['month'] == 1), 1, 0)
 
     data['Summer'] = np.where(
-        (data['month'] == 6) | (data['month'] == 7) | (data['month'] == 8), 1,
-        0)
+        (data['month'] == 6) | (data['month'] == 7) | (data['month'] == 8), 1, 0)
 
     data['DayDiff'] = data['High Temperature Actual'] - \
         data['Low Temperature Actual']
@@ -92,8 +87,7 @@ def OLS_and_ARMA(index, city):
     data['LagReturn'] = data['Return'].shift(periods=-1)
     data_cut = data[1:]
     X = data_cut[[
-        'LagReturn', 'VeryCold', 'HeavyRain', 'ColdRain', 'Monday', 'Winter',
-        'Summer'
+        'LagReturn', 'VeryCold', 'HeavyRain', 'ColdRain', 'Monday', 'Winter', 'Summer'
     ]]
     Y = data_cut['Return'].to_frame().values
 
@@ -101,7 +95,6 @@ def OLS_and_ARMA(index, city):
     reg1 = sm.OLS(endog=Y, exog=X, missing='drop')
     results1 = reg1.fit()
     plot_and_save_stats(results1, "OLS_1_" + index + "_" + city)
-    print(results1.summary())
 
     # MODEL2:
     # return_t = return_t-1 + DayDifference + binaryRAIN + binaryWINTER + binarySOMMER + binaryMONDAY
@@ -115,41 +108,44 @@ def OLS_and_ARMA(index, city):
     reg2 = sm.OLS(endog=Y, exog=X, missing='drop')
     results2 = reg2.fit()
     plot_and_save_stats(results2, "OLS_2_" + index + "_" + city)
-    print(results2.summary())
 
     # ARMA #####################
     # acf & pacf
-    plot_acf(data_cut['Return'], lags=10)
-    plot_pacf(data_cut['Return'], lags=10)
-
+    fig, ax = plt.subplots(figsize=(25, 10))
+    plot_acf(data_cut['Return'], lags=10, ax=ax)
+    ax.set_title("Autocorrelation of {} returns".format(index))
+    fig.savefig('./plots/acf_{}_returns.png'.format(index))
+    plt.close()
+    
+    fig, ax = plt.subplots(figsize=(25, 10))
+    plot_pacf(data_cut['Return'], lags=10, ax=ax)
+    ax.set_title("Partial Autocorrelation of {} returns".format(index))
+    fig.savefig('./plots/pacf_{}_returns.png'.format(index))
+    plt.close()
+    
     # ARMA11 NO exogenous variables
     model = SARIMAX(endog=Y, order=(1, 0, 1), enforce_stationarity=False)
     model_fit = model.fit(disp=1)
-    print(model_fit.summary())
+    plot_and_save_stats(model_fit, "ARMA11_noexvar_"+index)
 
     # Plot residual errors
+    fig, ax = plt.subplots(figsize=(25, 10))
     residuals = pd.DataFrame(model_fit.resid)
-    residuals.plot()
-    plot_acf(residuals, lags=10)
-    plt.show()
-    residuals.plot(kind='kde')
-    plt.show()
-    print(residuals.describe())
+    residuals.plot(ax=ax, title="Residuals")
+    
+    fig, ax = plt.subplots(figsize=(25, 10))
+    plot_pacf(residuals, lags=10, ax=ax)
+    ax.set_title("Autocorrelation of {} residuals".format(index))
+    fig.savefig('./plots/pacf_{}_residuals.png'.format(index))
+    plt.close()
+
 
     # ARMA11 with exogenous variables
     X = data_cut[['DayDiff', 'HeavyRain', 'Monday', 'Winter', 'Summer']]
     model2 = SARIMAX(
         endog=Y, exog=X, order=(1, 0, 0), enforce_stationarity=False)
     model_fit2 = model2.fit(disp=1)
-    print(model_fit2.summary())
-
-    # plot residual errors
-    residuals2 = pd.DataFrame(model_fit2.resid)
-    residuals2.plot()
-    plt.show()
-    residuals2.plot(kind='kde')
-    plt.show()
-    print(residuals2.describe())
+    plot_and_save_stats(model_fit2, "ARMA11_inclexvar_"+index)
 
 
 def OLS_global(index):
@@ -244,7 +240,7 @@ def plot_and_save_stats(model, name):
     filename = './plots/{}_OLS_global.png'.format(name)
     plt.savefig(filename)
     print("Saved regression results under {}\n".format(filename))
-
+    plt.close()
 
 if __name__ == "__main__":
     main()
